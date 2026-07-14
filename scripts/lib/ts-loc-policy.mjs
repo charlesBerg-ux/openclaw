@@ -1,4 +1,10 @@
 const CONTROL_UI_LOCALE_BUNDLE_PATTERN = /^ui\/src\/i18n\/locales\/[^/]+\.ts$/u;
+// Centralized config catalogs aggregate one entry per config key (schema, help text,
+// labels, and the per-domain type declarations). They grow monotonically as keys are
+// added across the repo, so ratcheting their absolute size would block every new config
+// key; excluded like the i18n locale bundle.
+const CONFIG_KEY_CATALOG_PATTERN =
+  /^src\/config\/(?:zod-schema\.providers-core|schema\.help|schema\.labels|types\.[a-z0-9-]+)\.ts$/u;
 const GENERATED_SEGMENT_PATTERN = /(^|\/)(?:__generated__|generated)(?:\/|$)/u;
 const GENERATED_SUFFIX_PATTERN = /\.generated(?:\.d)?\.[cm]?tsx?$/u;
 const TEST_LIKE_SEGMENT_PATTERN =
@@ -19,6 +25,7 @@ export function isProductionTypeScriptFile(filePath) {
   return (
     /\.(?:ts|tsx|mts|cts)$/u.test(filePath) &&
     !CONTROL_UI_LOCALE_BUNDLE_PATTERN.test(filePath) &&
+    !CONFIG_KEY_CATALOG_PATTERN.test(filePath) &&
     !GENERATED_SEGMENT_PATTERN.test(filePath) &&
     !GENERATED_SUFFIX_PATTERN.test(filePath) &&
     !TEST_LIKE_SEGMENT_PATTERN.test(filePath) &&

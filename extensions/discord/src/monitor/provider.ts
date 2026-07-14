@@ -405,6 +405,7 @@ export async function monitorDiscordProvider(opts: MonitorDiscordOpts = {}) {
       cfg,
       discordConfig: discordCfg,
       accountId: account.accountId,
+      applicationId,
       token,
       commandSpecs,
       nativeEnabled,
@@ -423,7 +424,6 @@ export async function monitorDiscordProvider(opts: MonitorDiscordOpts = {}) {
       abortSignal: opts.abortSignal,
       createNativeCommand: createDiscordNativeCommandForTesting ?? createDiscordNativeCommand,
     });
-
     const {
       client,
       gateway,

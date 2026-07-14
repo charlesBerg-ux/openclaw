@@ -116,6 +116,11 @@ describe("scripts/check-ts-max-loc", () => {
     expect(isProductionTypeScriptFile("src/fixture-loader.ts")).toBe(true);
     expect(isProductionTypeScriptFile("src/test-supportability.ts")).toBe(true);
     expect(isProductionTypeScriptFile("ui/src/i18n/locales/en.ts")).toBe(false);
+    expect(isProductionTypeScriptFile("src/config/zod-schema.providers-core.ts")).toBe(false);
+    expect(isProductionTypeScriptFile("src/config/schema.help.ts")).toBe(false);
+    expect(isProductionTypeScriptFile("src/config/schema.labels.ts")).toBe(false);
+    expect(isProductionTypeScriptFile("src/config/types.discord.ts")).toBe(false);
+    expect(isProductionTypeScriptFile("src/config/schema.ts")).toBe(true);
   });
 
   it("parses NUL-delimited renames and copies without path ambiguity", () => {

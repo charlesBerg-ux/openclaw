@@ -1131,6 +1131,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "channels/discord",
+                  "channels/discord-activities",
                   "channels/slack",
                   "channels/telegram",
                   "channels/whatsapp",
