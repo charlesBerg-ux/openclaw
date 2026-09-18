@@ -703,7 +703,7 @@ img.chat-avatar.chat-avatar--logo {
   position: relative;
   display: block;
   border: 1px solid transparent;
-  background: var(--card);
+  background: var(--chat-bubble-surface, var(--card));
   border-radius: var(--radius-md);
   padding: 16px;
   box-shadow: none;
@@ -1000,7 +1000,7 @@ img.chat-avatar.chat-avatar--logo {
 
 /* User bubbles have different styling */
 .chat-group.user .chat-bubble {
-  --chat-bubble-background: var(--accent-subtle);
+  --chat-bubble-background: var(--chat-bubble-user-surface, var(--accent-subtle));
   background: var(--chat-bubble-background);
   border-color: transparent;
 }
@@ -1010,16 +1010,21 @@ img.chat-avatar.chat-avatar--logo {
   box-shadow: none;
 }
 
-/* Light mode: restore borders for surfaces that retain them. */
+/* Light mode: restore borders for surfaces that retain them. A theme that
+ * draws flat bubbles instead sets the three tokens below; the fallbacks are
+ * the behaviour every existing theme already had. */
 :root[data-theme-mode="light"] .chat-bubble {
-  border-color: var(--border);
-  background: var(--bg);
-  box-shadow: inset 0 1px 0 var(--card-highlight);
+  border-color: var(--chat-bubble-border, var(--border));
+  background: var(--chat-bubble-surface, var(--bg));
+  box-shadow: var(--chat-bubble-shadow, inset 0 1px 0 var(--card-highlight));
 }
 
 /* Theme selection must not outrank the bare sent-media shell below. */
 :where(:root[data-theme-mode="light"]) .chat-group.user .chat-bubble {
-  --chat-bubble-background: color-mix(in srgb, var(--accent) 15%, var(--bg));
+  --chat-bubble-background: var(
+    --chat-bubble-user-surface,
+    color-mix(in srgb, var(--accent) 15%, var(--bg))
+  );
   border-color: transparent;
   background: var(--chat-bubble-background);
   color: var(--text-strong);

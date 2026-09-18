@@ -31,6 +31,21 @@
   --accent-hover: #c3d9fd;
   --accent-muted: #a8c7fa;
   --accent-subtle: rgba(168, 199, 250, 0.12);
+  /* Chat surfaces, derived rather than drawn - the Figma frame is light only.
+   * Same idea as the light block: flat bubbles, one step up from the
+   * transcript ground, and a composer that reads as a field rather than a
+   * card. Contrast against --chat-bubble-surface #1e222b (luminance ~= 0.0159):
+   *   --text         #c7cad1   ~= 9.7:1   OK
+   *   --text-strong  #f0f2f7   ~= 14.2:1  OK
+   * Against the owner bubble #1c3050:
+   *   --text         #c7cad1   ~= 8.1:1   OK
+   *   --text-strong  #f0f2f7   ~= 11.8:1  OK
+   */
+  --chat-bubble-surface: #1e222b;
+  --chat-bubble-user-surface: #1c3050;
+  --chat-bubble-border: transparent;
+  --chat-bubble-shadow: none;
+  --chat-composer-theme-surface: #1e222b;
   --accent-glow: rgba(168, 199, 250, 0.18);
   --primary: #a8c7fa;
   --primary-foreground: #06305f;
@@ -98,6 +113,26 @@
   --accent-hover: #0842a0;
   --accent-muted: #0b57d0;
   --accent-subtle: #d3e2fd;
+  /*
+   * Chat surfaces, read out of the "chat-window" frame (Figma node 32:115).
+   * The drawing's palette is this token set already: the agent bubble is
+   * --bg-muted, the message field is --bg-accent, the header and composer are
+   * --bg-elevated and the transcript behind them is --bg. Bubbles in the
+   * drawing are flat, so the border and the inset highlight both go.
+   *
+   * Contrast against the agent bubble #e1e4ec (relative luminance ~= 0.7755):
+   *   --text         #3c4043   ~= 8.2:1   AA text OK
+   *   --text-strong  #1d1f24   ~= 13.0:1  OK
+   * Against the owner bubble #d3e2fd (~= 0.7533):
+   *   --text-strong  #1d1f24   ~= 12.6:1  OK
+   * Against the composer field #e8edf4:
+   *   --muted        #5c5e66   ~= 5.5:1   AA text OK
+   */
+  --chat-bubble-surface: #e1e4ec;
+  --chat-bubble-user-surface: #d3e2fd;
+  --chat-bubble-border: transparent;
+  --chat-bubble-shadow: none;
+  --chat-composer-theme-surface: #e8edf4;
   --accent-glow: rgba(11, 87, 208, 0.16);
   --primary: #0b57d0;
   --primary-foreground: #ffffff;

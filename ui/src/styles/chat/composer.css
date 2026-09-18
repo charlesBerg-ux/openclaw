@@ -81,7 +81,9 @@
    where --text-strong is dark rather than near-white. */
 .agent-chat__composer-shell,
 .agent-chat__input {
-  --chat-composer-surface: var(--popover);
+  /* A theme may give the composer its own surface; the fallback is what
+     every existing theme already used. */
+  --chat-composer-surface: var(--chat-composer-theme-surface, var(--popover));
   --chat-composer-light-outline: rgb(0 0 0 / 6%);
   --composer-attached-surface: color-mix(
     in srgb,
@@ -97,7 +99,9 @@
      so it can follow a growing textarea, which only reads as one axis while all
      its children share this box. */
   --chat-composer-control-height: 36px;
-  --chat-composer-surface: var(--popover);
+  /* A theme may give the composer its own surface; the fallback is what
+     every existing theme already used. */
+  --chat-composer-surface: var(--chat-composer-theme-surface, var(--popover));
   --chat-composer-secondary: color-mix(
     in srgb,
     var(--text-strong) 65%,

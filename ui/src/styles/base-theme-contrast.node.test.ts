@@ -260,19 +260,50 @@ function mixColors(first: Color, firstWeight: number, second: Color): Color {
   return { rgb: [channel(0), channel(1), channel(2)], alpha };
 }
 
+/**
+ * Split `var(--name)` or `var(--name, <fallback>)`. The fallback may itself be
+ * a var() or a color-mix() containing commas, so the split walks the string
+ * and breaks at the first comma that is not inside brackets.
+ */
+function parseVarExpression(value: string): { variable: string; fallback?: string } | null {
+  if (!value.startsWith("var(") || !value.endsWith(")")) {
+    return null;
+  }
+  const inner = value.slice(4, -1);
+  let depth = 0;
+  for (let index = 0; index < inner.length; index += 1) {
+    const character = inner[index];
+    if (character === "(") depth += 1;
+    else if (character === ")") depth -= 1;
+    else if (character === "," && depth === 0) {
+      const variable = inner.slice(0, index).trim();
+      if (!/^--[\w-]+$/u.test(variable)) return null;
+      return { variable, fallback: inner.slice(index + 1).trim() };
+    }
+  }
+  const variable = inner.trim();
+  return /^--[\w-]+$/u.test(variable) ? { variable } : null;
+}
+
 function resolveColor(value: string, tokens: TokenMap, resolving = new Set<string>()): Color {
   const color = value.trim();
   if (color.startsWith("#")) {
     return { rgb: parseHex(color), alpha: 1 };
   }
 
-  const variable = color.match(/^var\((--[\w-]+)\)$/u)?.[1];
-  if (variable) {
+  const reference = parseVarExpression(color);
+  if (reference) {
+    const { variable, fallback } = reference;
     if (resolving.has(variable)) {
       throw new Error(`circular color token "${variable}"`);
     }
     const resolved = tokens.get(variable);
     if (!resolved) {
+      // CSS semantics: an undefined token falls through to its fallback. A
+      // theme hook that no theme has set yet is the normal case, not an error.
+      if (fallback) {
+        return resolveColor(fallback, tokens, resolving);
+      }
       throw new Error(`could not resolve color token "${variable}"`);
     }
     return resolveColor(resolved, tokens, new Set(resolving).add(variable));
