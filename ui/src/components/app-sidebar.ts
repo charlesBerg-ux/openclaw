@@ -25,6 +25,7 @@ import "../plugins/control-ui-contributions.ts";
 import { renderPluginSurface } from "../plugins/control-ui-view.ts";
 import "../styles/app-sidebar.css";
 import { sidebarPluginTabs } from "./app-sidebar-nav-menus.ts";
+import { renderAppSidebarAgentRail } from "./app-sidebar-agent-rail.ts";
 import {
   renderAppSidebarBrand,
   renderAppSidebarFooterBar,
@@ -638,7 +639,8 @@ class AppSidebar extends AppSidebarSessionNavigationElement implements SessionLi
                   ></openclaw-plugin-contributions>
                 </div>
               </nav>
-              ${renderAppSidebarOnline(this)} ${this.renderSessions()}
+              ${renderAppSidebarOnline(this)} ${renderAppSidebarAgentRail(this)}
+              ${this.renderSessions()}
             </div>
             ${
               this.sessionsStatusFilter === "archived"

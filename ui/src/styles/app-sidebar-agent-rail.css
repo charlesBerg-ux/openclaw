@@ -1,0 +1,129 @@
+/* Agent rail — one row per agent, newest first.
+ *
+ * Every colour here is a token. app-sidebar.css contains no literal hex and
+ * this file keeps that true, which is a one-line grep that can fail.
+ */
+
+.agent-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 8px 8px;
+}
+
+.agent-rail__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  font: inherit;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.agent-rail__row:hover {
+  background: var(--bg-hover);
+}
+
+.agent-rail__row:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.agent-rail__row--selected {
+  background: var(--accent-subtle);
+  border-color: var(--border-strong);
+}
+
+.agent-rail__avatar {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--agent-ring, var(--border-strong));
+  background: var(--bg-elevated);
+  color: var(--text-strong);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.agent-rail__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.agent-rail__line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.agent-rail__name {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.agent-rail__star {
+  flex: 0 0 auto;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.agent-rail__date {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.agent-rail__preview {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* The unread mark. A date says when; this says whether there is something new.
+ * Without it the rail is a prettier version of the same model. */
+.agent-rail__unread {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  min-width: 8px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--primary-foreground);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.agent-rail__unread:empty {
+  min-width: 8px;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+}
