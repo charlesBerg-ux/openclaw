@@ -12,6 +12,7 @@ export type ThemeName =
   | "manuscript"
   | "rose"
   | "miami"
+  | "cove"
   | "custom";
 export type ThemeMode = "system" | "light" | "dark";
 export type ResolvedTheme =
@@ -37,6 +38,8 @@ export type ResolvedTheme =
   | "rose-light"
   | "miami"
   | "miami-light"
+  | "cove"
+  | "cove-light"
   | "custom"
   | "custom-light";
 
@@ -52,6 +55,7 @@ const VALID_THEME_NAMES = new Set<ThemeName>([
   "manuscript",
   "rose",
   "miami",
+  "cove",
   "custom",
 ]);
 

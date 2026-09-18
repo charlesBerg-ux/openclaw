@@ -805,6 +805,10 @@ const enSettings = {
         label: "Miami",
         description: "Magenta & cyan",
       },
+      cove: {
+        label: "Cove",
+        description: "Soft blue & slate",
+      },
     },
     textSizes: {
       small: "Small",

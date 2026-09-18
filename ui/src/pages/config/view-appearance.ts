@@ -105,6 +105,11 @@ const BUILTIN_THEME_OPTIONS: ThemeOption[] = [
     labelKey: "configView.themes.miami.label",
     descriptionKey: "configView.themes.miami.description",
   },
+  {
+    id: "cove",
+    labelKey: "configView.themes.cove.label",
+    descriptionKey: "configView.themes.cove.description",
+  },
 ];
 
 const ACCENT_PRESETS = [
