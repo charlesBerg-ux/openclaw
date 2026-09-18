@@ -1,5 +1,6 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { normalizeAgentLabel } from "../lib/agents/display.ts";
+import { isMachineSessionRow } from "../lib/sessions/machine-rows.ts";
 import "../styles/app-sidebar-agent-rail.css";
 
 /*
@@ -66,6 +67,14 @@ function latestByAgent(host: AgentRailHost): Map<string, Latest> {
     const row = raw as Record<string, unknown>;
     const agentId = typeof row.agentId === "string" ? row.agentId : "";
     if (!agentId) continue;
+    const key = typeof row.key === "string" ? row.key : "";
+    // A row should say what the agent last said to you, not when a job last
+    // ran. Scheduled runs and helper copies are excluded so the line stays a
+    // conversation; the run itself is still on the Automations page.
+    if (!key || key.includes(":cron:")) continue;
+    if (isMachineSessionRow({ key, spawnedBy: typeof row.spawnedBy === "string" ? row.spawnedBy : undefined })) {
+      continue;
+    }
     const at = Number(row.lastActivityAt ?? row.updatedAt ?? 0) || 0;
     const existing = latest.get(agentId);
     if (existing && existing.at >= at) continue;

@@ -18,6 +18,7 @@ import "./theme-mode-toggle.ts";
 import "./tooltip.ts";
 import type { CatalogSessionKey } from "../lib/sessions/catalog-key.ts";
 import type { CatalogProjectGrouping } from "../lib/sessions/catalog-project-grouping.ts";
+import { isMachineSessionRow } from "../lib/sessions/machine-rows.ts";
 import { showToast } from "../lib/toast.ts";
 import { SubscriptionsController } from "../lit/subscriptions-controller.ts";
 import { SETTINGS_ROUTE_TARGETS } from "../pages/config/route-data.ts";
@@ -254,7 +255,10 @@ class AppSidebar extends AppSidebarSessionNavigationElement implements SessionLi
   protected override selectedAgentSessionRows(
     navigationState: SidebarSessionNavigationState,
   ): SidebarRecentSession[] {
-    return this.projectedSessionRows ?? super.selectedAgentSessionRows(navigationState);
+    const rows = this.projectedSessionRows ?? super.selectedAgentSessionRows(navigationState);
+    // Keep the machinery out of the list of things you talk to. The rows still
+    // exist and still show up in Automations and Tasks.
+    return rows.filter((row) => !isMachineSessionRow(row));
   }
 
   protected override zonedVisibleSections(_rows: SidebarRecentSession[]): SidebarVisibleSections {
