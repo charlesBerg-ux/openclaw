@@ -1,6 +1,7 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { normalizeAgentLabel } from "../lib/agents/display.ts";
 import { isMachineSessionRow } from "../lib/sessions/machine-rows.ts";
+import type { AgentRailActivity } from "./app-sidebar-agent-rail-activity.ts";
 import "../styles/app-sidebar-agent-rail.css";
 
 /*
@@ -30,9 +31,10 @@ type AgentRailHost = {
   };
   pinnedAgentIds: readonly string[];
   agentUnreadCount: (agentId: string) => number;
+  agentRailActivity: AgentRailActivity;
   switchChipAgent: (agentId: string) => void;
   sessionData: {
-    sessionsResult?: { sessions?: readonly unknown[] } | undefined;
+    sessionsResult?: { sessions?: readonly unknown[] } | null | undefined;
     sessionResultsByAgent?: Record<string, { sessions?: readonly unknown[] }>;
   };
 };
@@ -101,21 +103,27 @@ export function renderAppSidebarAgentRail(host: AgentRailHost): TemplateResult |
   const { activeId, agents, identities } = host.activeChipAgent();
   if (!agents || agents.length === 0) return nothing;
 
-  const latest = latestByAgent(host);
+  const loaded = latestByAgent(host);
+  // The open agent's rows are live in the shared store, so they win. Every
+  // other agent comes from the rail's own cache, which is the only place that
+  // knows anything about them.
+  const latestFor = (agentId: string): Latest | undefined =>
+    loaded.get(agentId) ?? host.agentRailActivity.latest(agentId);
   const pinned = new Set(host.pinnedAgentIds ?? []);
 
-  const ordered = [...agents].sort((a, b) => (latest.get(b.id)?.at ?? 0) - (latest.get(a.id)?.at ?? 0));
+  const ordered = [...agents].sort((a, b) => (latestFor(b.id)?.at ?? 0) - (latestFor(a.id)?.at ?? 0));
 
   return html`
     <div class="agent-rail" role="list" aria-label="Agents">
       ${ordered.map((agent) => {
-        const info = latest.get(agent.id);
+        const info = latestFor(agent.id);
         const label = normalizeAgentLabel(
           agent as never,
           identities.get(agent.id) as never,
         );
         const initial = (label || agent.id).trim().charAt(0).toUpperCase();
-        const unreadCount = host.agentUnreadCount(agent.id) || 0;
+        const unreadCount =
+          host.agentUnreadCount(agent.id) || host.agentRailActivity.latest(agent.id)?.unreadRows || 0;
         const unseen = info ? info.at > info.lastReadAt && info.lastReadAt > 0 : false;
         const unread = unreadCount > 0 || Boolean(info?.markedUnreadAt) || unseen;
         const selected = agent.id === activeId;

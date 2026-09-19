@@ -19,6 +19,7 @@ import "./tooltip.ts";
 import type { CatalogSessionKey } from "../lib/sessions/catalog-key.ts";
 import type { CatalogProjectGrouping } from "../lib/sessions/catalog-project-grouping.ts";
 import { isMachineSessionRow } from "../lib/sessions/machine-rows.ts";
+import { AgentRailActivity } from "./app-sidebar-agent-rail-activity.ts";
 import { showToast } from "../lib/toast.ts";
 import { SubscriptionsController } from "../lit/subscriptions-controller.ts";
 import { SETTINGS_ROUTE_TARGETS } from "../pages/config/route-data.ts";
@@ -240,7 +241,19 @@ class AppSidebar extends AppSidebarSessionNavigationElement implements SessionLi
         ? [this.expandedAgentId()]
         : this.activeChipAgent().agents.map((agent) => agent.id);
     this.ensureAgentIdentities(identityIds);
+    // The rail shows every agent, so it needs every agent's latest message.
+    // The shared store only ever holds the open agent's sessions, so this
+    // reads the rest into a cache of its own, once each.
+    if (this.connected) {
+      this.agentRailActivity.hydrate(
+        this.context?.sessions,
+        this.activeChipAgent().agents.map((agent) => agent.id),
+        () => this.requestUpdate(),
+      );
+    }
   }
+
+  readonly agentRailActivity = new AgentRailActivity();
 
   ensureAgentIdentities(agentIds: readonly string[]): void {
     if (this.connected) {
