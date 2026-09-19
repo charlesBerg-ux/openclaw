@@ -110,12 +110,64 @@ export function adoptedCatalogSessionKeys(catalogs: readonly SessionCatalog[]): 
     same projection: excluding a key whose catalog is hidden (or whose section
     the archived filter suppresses) deletes the session from the entire sidebar
     with no row anywhere. */
+/*
+ * A coding session that happened inside an agent's workspace belongs to that
+ * agent, and the agent already has its own row above.
+ *
+ * Four agents here run on the Claude Code runtime, so every turn they take
+ * leaves a coding session behind as well as an agent session. On this machine
+ * that put 47 of Spot's daily readiness runs, and Hearth's actual Slack
+ * replies, in a list next to a handful of genuine coding sessions. The same
+ * conversation was being counted twice, in two different parts of the sidebar.
+ *
+ * The test is the working directory, because it is the only thing every row
+ * actually carries. Two things that look like better signals are not:
+ *
+ *   - The gateway session key is set on 3 rows out of 67.
+ *   - The title is empty on 40 of them, and a scheduled run that does have a
+ *     title reads "Spot daily readiness check", not anything marked as a job.
+ *
+ * An agent's workspace is `<openclaw home>/workspace/<agent id>`, so a session
+ * one level inside that folder is an agent's own run. The workspace folder
+ * itself is not, and neither is anywhere else on disk, so ordinary coding
+ * sessions are untouched.
+ *
+ * Nothing is deleted. These runs stay on the Automations and Tasks pages, and
+ * the agent's own row still shows what it last said.
+ */
+function isAgentWorkspaceSession(session: { cwd?: string }): boolean {
+  const cwd = session.cwd?.replace(/\/+$/u, "");
+  if (!cwd) {
+    return false;
+  }
+  const marker = "/.openclaw/workspace/";
+  const at = cwd.indexOf(marker);
+  return at >= 0 && cwd.length > at + marker.length;
+}
+
+function withoutAgentRuns(catalog: SessionCatalog): SessionCatalog {
+  let changed = false;
+  const hosts = catalog.hosts.map((host) => {
+    const sessions = host.sessions.filter((session) => !isAgentWorkspaceSession(session));
+    if (sessions.length === host.sessions.length) {
+      return host;
+    }
+    changed = true;
+    return { ...host, sessions };
+  });
+  return changed ? { ...catalog, hosts } : catalog;
+}
+
 export function visibleSessionCatalogProjection(
   catalogs: readonly SessionCatalog[],
   hiddenCatalogIds: ReadonlySet<string>,
   archivedFilter: boolean,
 ): SessionCatalog[] {
-  return archivedFilter ? [] : catalogs.filter((catalog) => !hiddenCatalogIds.has(catalog.id));
+  return archivedFilter
+    ? []
+    : catalogs
+        .filter((catalog) => !hiddenCatalogIds.has(catalog.id))
+        .map((catalog) => withoutAgentRuns(catalog));
 }
 
 export function visibleCatalogHosts(
